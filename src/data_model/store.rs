@@ -1,7 +1,7 @@
 use super::item::Item;
 
 pub struct VectorStore {
-    pub items: HashMap<String, Item>
+    items: HashMap<String, Item>
 }
 
 impl VectorStore {
@@ -17,7 +17,7 @@ impl VectorStore {
         self.items.remove(id)
     }
 
-    pub fn get(&mut self, &item: Item) -> Option<&item> {
+    pub fn get(&self, id: &str) -> Option<&item> {
         self.items.get(id)
     }
 }
