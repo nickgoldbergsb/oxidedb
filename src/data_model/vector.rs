@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub struct Vector {
     pub data: Vec<f32>
 }

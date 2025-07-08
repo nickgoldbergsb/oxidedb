@@ -1,6 +1,7 @@
-use crate::vector::Vector;
+use super::vector::Vector;
 use std::collections::HashMap;
 
+#[derive(Debug)]
 pub struct Item {
     id: String,
     vector: Vector,
