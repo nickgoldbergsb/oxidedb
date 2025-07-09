@@ -1,6 +1,7 @@
 use super::vector::Vector;
 use super::item::Item;
 use super::metrics::metric::SimilarityMetric;
+use super::filter::FilterCondition;
 
 use std::{cmp::Ordering, collections::{BinaryHeap, HashMap}};
 
@@ -49,6 +50,44 @@ impl VectorStore {
             .map(|element| (element.item, element.score))
             .collect()
     }
+
+    pub fn filter(&self, filters: &FilterCondition) -> Vec<&Item> {
+        self.items
+        .values()
+        .filter(|item| filters.matches(item.get_metadata()))
+        .collect()
+    }
+
+    pub fn search_top_k_with_filter(&self, vector: &Vector, k: usize, metric: &impl SimilarityMetric, filters: Option<&FilterCondition>) -> Vec<(Item, f32)> {
+        let data = match filters {
+            Some(f) => self.filter(f),
+            None => self.items.values().collect(),
+        };
+
+        let mut heap = BinaryHeap::new();
+
+        for item in data {
+            if let Some(score) =  metric.compute(item.get_vector(), vector) {
+                heap.push(
+                    HeapElement {
+                        item: item.clone(),
+                        score
+                    }
+                );
+            }
+
+            if heap.len() > k {
+                heap.pop();
+            }
+        }
+
+        heap.into_sorted_vec()
+            .into_iter()
+            .map(|element| (element.item, element.score))
+            .collect()
+
+    }
+
 }
 
 #[derive(PartialEq, Debug, Clone)]
