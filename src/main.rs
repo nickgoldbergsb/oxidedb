@@ -3,9 +3,7 @@ mod data_model;
 use data_model::vector::Vector;
 use data_model::item::Item;
 use data_model::store::VectorStore;
-use data_model::metrics::metric::SimilarityMetric;
 use data_model::metrics::cosine::Cosine;
-use data_model::metrics::euclidean::Euclidean;
 
 use std::collections::HashMap;
 
@@ -38,5 +36,9 @@ fn main() {
 
     let search_results = store.search_top_k(&test_vector, 2, &metric);
 
-    println!("{:#?}", search_results)
+    println!("{:#?}", search_results);
+
+    store.get("abc123");
+
+    store.delete("abc123");
 }

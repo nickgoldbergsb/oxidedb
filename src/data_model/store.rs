@@ -2,8 +2,6 @@ use super::vector::Vector;
 use super::item::Item;
 use super::metrics::metric::SimilarityMetric;
 
-// use std::collections::HashMap;
-// use std::collections::BinaryHeap;
 use std::{cmp::Ordering, collections::{BinaryHeap, HashMap}};
 
 #[derive(Debug)]
@@ -48,7 +46,7 @@ impl VectorStore {
 
         heap.into_sorted_vec()
             .into_iter()
-            .map(|(element)| (element.item, element.score))
+            .map(|element| (element.item, element.score))
             .collect()
     }
 }
