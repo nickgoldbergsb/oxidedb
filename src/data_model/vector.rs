@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Vector {
     pub data: Vec<f32>
 }
@@ -8,7 +8,7 @@ impl Vector {
         Self { data }
     }
 
-    fn dimension(&self) -> usize {
+    pub fn dimension(&self) -> usize {
         self.data.len()
     }
 }

@@ -1,7 +1,7 @@
 use super::vector::Vector;
 use std::collections::HashMap;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Item {
     id: String,
     vector: Vector,
