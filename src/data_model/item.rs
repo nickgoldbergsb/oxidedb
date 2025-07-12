@@ -5,11 +5,11 @@ use std::collections::HashMap;
 pub struct Item {
     id: String,
     vector: Vector,
-    metadata: Option<HashMap<String, String>>
+    metadata: Option<HashMap<String, MetadataValue>>,
 }
 
 impl Item {
-    pub fn new(id: String, vector: Vector, metadata: Option<HashMap<String, String>>) -> Self {
+    pub fn new(id: String, vector: Vector, metadata: Option<HashMap<String, MetadataValue>>) -> Self {
         Self { id, vector, metadata }
     }
 
@@ -21,7 +21,15 @@ impl Item {
         &self.vector
     }
 
-    pub fn get_metadata(&self) -> Option<&HashMap<String, String>> {
+    pub fn get_metadata(&self) -> Option<&HashMap<String, MetadataValue>> {
         self.metadata.as_ref()
     }
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum MetadataValue {
+    StringValue(String),
+    FloatValue(f64),
+    BoolValue(bool),
+    StringArray(Vec<String>),
 }
