@@ -1,4 +1,5 @@
-pub mod vector;
+pub mod filter;
 pub mod item;
-pub mod store;
 pub mod metrics;
+pub mod store;
+pub mod vector;

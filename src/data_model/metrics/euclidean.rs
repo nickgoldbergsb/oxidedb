@@ -1,5 +1,5 @@
-use super::metric::SimilarityMetric;
 use super::super::vector::Vector;
+use super::metric::SimilarityMetric;
 
 pub struct Euclidean;
 
@@ -9,7 +9,12 @@ impl SimilarityMetric for Euclidean {
             return None;
         }
 
-        let sum_squared = v1.data.iter().zip(v2.data.iter()).map(|(a, b)| (a-b).powi(2)).sum::<f32>();
+        let sum_squared = v1
+            .data
+            .iter()
+            .zip(v2.data.iter())
+            .map(|(a, b)| (a - b).powi(2))
+            .sum::<f32>();
         Some(sum_squared.sqrt())
     }
 }

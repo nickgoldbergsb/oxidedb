@@ -1,5 +1,5 @@
-use super::metric::SimilarityMetric;
 use super::super::vector::Vector;
+use super::metric::SimilarityMetric;
 
 pub struct Cosine;
 
@@ -9,7 +9,12 @@ impl SimilarityMetric for Cosine {
             return None;
         }
 
-        let dot_product = v1.data.iter().zip(v2.data.iter()).map(|(a, b)| (a*b)).sum::<f32>();
+        let dot_product = v1
+            .data
+            .iter()
+            .zip(v2.data.iter())
+            .map(|(a, b)| (a * b))
+            .sum::<f32>();
         let self_magnitude = v1.data.iter().map(|v| v.powi(2)).sum::<f32>().sqrt();
         let other_magnitude = v2.data.iter().map(|v| v.powi(2)).sum::<f32>().sqrt();
 
@@ -17,6 +22,6 @@ impl SimilarityMetric for Cosine {
             return None;
         }
 
-        Some(dot_product/(self_magnitude*other_magnitude))
+        Some(dot_product / (self_magnitude * other_magnitude))
     }
 }

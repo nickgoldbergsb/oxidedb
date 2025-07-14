@@ -1,12 +1,16 @@
-use super::vector::Vector;
+use super::filter::FilterCondition;
 use super::item::Item;
 use super::metrics::metric::SimilarityMetric;
+use super::vector::Vector;
 
-use std::{cmp::Ordering, collections::{BinaryHeap, HashMap}};
+use std::{
+    cmp::Ordering,
+    collections::{BinaryHeap, HashMap},
+};
 
 #[derive(Debug)]
 pub struct VectorStore {
-    items: HashMap<String, Item>
+    items: HashMap<String, Item>,
 }
 
 impl VectorStore {
@@ -15,7 +19,7 @@ impl VectorStore {
     }
 
     pub fn upsert(&mut self, item: Item) {
-        self.items.insert(item.get_id().clone(), item);
+        self.items.insert(item.id().to_string(), item);
     }
 
     pub fn delete(&mut self, id: &str) {
@@ -26,17 +30,60 @@ impl VectorStore {
         self.items.get(id)
     }
 
-    pub fn search_top_k(&self, vector: &Vector, k: usize, metric: &impl SimilarityMetric) -> Vec<(Item, f32)> {
+    pub fn search_top_k(
+        &self,
+        vector: &Vector,
+        k: usize,
+        metric: &impl SimilarityMetric,
+    ) -> Vec<(Item, f32)> {
         let mut heap = BinaryHeap::new();
 
         for (_id, item) in &self.items {
-            if let Some(score) =  metric.compute(item.get_vector(), vector) {
-                heap.push(
-                    HeapElement {
-                        item: item.clone(),
-                        score
-                    }
-                );
+            if let Some(score) = metric.compute(item.vector(), vector) {
+                heap.push(HeapElement {
+                    item: item.clone(),
+                    score,
+                });
+            }
+
+            if heap.len() > k {
+                heap.pop();
+            }
+        }
+
+        heap.into_sorted_vec()
+            .into_iter()
+            .map(|element| (element.item, element.score))
+            .collect()
+    }
+
+    pub fn filter(&self, filters: &FilterCondition) -> Vec<&Item> {
+        self.items
+            .values()
+            .filter(|item| filters.matches(item.metadata()))
+            .collect()
+    }
+
+    pub fn search_top_k_with_filter(
+        &self,
+        vector: &Vector,
+        k: usize,
+        metric: &impl SimilarityMetric,
+        filters: Option<&FilterCondition>,
+    ) -> Vec<(Item, f32)> {
+        let data = match filters {
+            Some(f) => self.filter(f),
+            None => self.items.values().collect(),
+        };
+
+        let mut heap = BinaryHeap::new();
+
+        for item in data {
+            if let Some(score) = metric.compute(item.vector(), vector) {
+                heap.push(HeapElement {
+                    item: item.clone(),
+                    score,
+                });
             }
 
             if heap.len() > k {
@@ -54,7 +101,7 @@ impl VectorStore {
 #[derive(PartialEq, Debug, Clone)]
 pub struct HeapElement {
     item: Item,
-    score: f32
+    score: f32,
 }
 
 impl Eq for HeapElement {}

@@ -1,9 +1,9 @@
 mod data_model;
 
-use data_model::vector::Vector;
 use data_model::item::Item;
-use data_model::store::VectorStore;
 use data_model::metrics::cosine::Cosine;
+use data_model::store::VectorStore;
+use data_model::vector::Vector;
 
 use std::collections::HashMap;
 

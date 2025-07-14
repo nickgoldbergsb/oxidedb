@@ -1,6 +1,6 @@
 #[derive(Debug, PartialEq, Clone)]
 pub struct Vector {
-    pub data: Vec<f32>
+    pub data: Vec<f32>,
 }
 
 impl Vector {
