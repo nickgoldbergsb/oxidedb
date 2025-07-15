@@ -2,7 +2,7 @@
 
 **OxideDB** is a lightweight, in-memory vector database written in Rust. It supports semantic search over vector embeddings, metadata filtering, and is designed for simplicity, composability, and learning.
 
-Inspired by production-grade vector DBs like Pinecone and Qdrant, OxideDB is open-source and educational—aimed at developers who want to understand how vector search engines work under the hood.
+Inspired by production-grade vector DBs like Pinecone and Qdrant, OxideDB is open-source and educational. Aimed at developers who want to understand how vector search engines work under the hood.
 
 ---
 
