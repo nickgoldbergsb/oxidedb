@@ -38,7 +38,7 @@ impl VectorStore {
     ) -> Vec<(Item, f32)> {
         let mut heap = BinaryHeap::new();
 
-        for (_id, item) in &self.items {
+        for item in self.items.values() {
             if let Some(score) = metric.compute(item.vector(), vector) {
                 heap.push(HeapElement {
                     item: item.clone(),
@@ -108,7 +108,7 @@ impl Eq for HeapElement {}
 
 impl PartialOrd for HeapElement {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        other.score.partial_cmp(&self.score)
+        Some(self.cmp(other))
     }
 }
 
