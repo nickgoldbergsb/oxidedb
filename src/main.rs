@@ -1,10 +1,10 @@
 mod vector_core;
 
+use std::collections::HashMap;
 use vector_core::filter::FilterCondition;
 use vector_core::item::{Item, MetadataValue};
 use vector_core::store::VectorStore;
 use vector_core::vector::Vector;
-use std::collections::HashMap;
 
 use crate::vector_core::similarity_metrics::cosine::Cosine;
 
