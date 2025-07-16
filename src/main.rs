@@ -1,12 +1,12 @@
-mod data_model;
+mod vector_core;
 
-use data_model::filter::FilterCondition;
-use data_model::item::{Item, MetadataValue};
-use data_model::store::VectorStore;
-use data_model::vector::Vector;
+use vector_core::filter::FilterCondition;
+use vector_core::item::{Item, MetadataValue};
+use vector_core::store::VectorStore;
+use vector_core::vector::Vector;
 use std::collections::HashMap;
 
-use crate::data_model::metrics::cosine::Cosine;
+use crate::vector_core::similarity_metrics::cosine::Cosine;
 
 fn main() {
     // Dummy metadata to exercise MetadataValue variants

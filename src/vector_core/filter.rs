@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::data_model::item::MetadataValue;
+use crate::vector_core::item::MetadataValue;
 
 #[derive(Debug, Clone)]
 pub enum FilterCondition {
