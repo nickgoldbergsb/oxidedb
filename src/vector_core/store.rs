@@ -1,6 +1,6 @@
 use super::filter::FilterCondition;
 use super::item::Item;
-use super::metrics::metric::SimilarityMetric;
+use super::similarity_metrics::metric::SimilarityMetric;
 use super::vector::Vector;
 
 use std::{
