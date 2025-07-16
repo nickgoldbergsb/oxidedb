@@ -1,44 +1,99 @@
 mod data_model;
 
-use data_model::item::Item;
-use data_model::metrics::cosine::Cosine;
+use data_model::filter::FilterCondition;
+use data_model::item::{Item, MetadataValue};
 use data_model::store::VectorStore;
 use data_model::vector::Vector;
-
 use std::collections::HashMap;
 
+use crate::data_model::metrics::cosine::Cosine;
+
 fn main() {
-    let data1: Vec<f32> = vec![0.1, 0.1, 0.2];
-    let data2: Vec<f32> = vec![0.1, 0.9, 0.4];
-    let data3: Vec<f32> = vec![0.1, 0.2, 0.3];
+    // Dummy metadata to exercise MetadataValue variants
+    let mut metadata = HashMap::new();
+    metadata.insert(
+        "key1".to_string(),
+        MetadataValue::StringValue("value".to_string()),
+    );
+    metadata.insert("key2".to_string(), MetadataValue::FloatValue(2.14));
+    metadata.insert("key3".to_string(), MetadataValue::BoolValue(true));
+    metadata.insert(
+        "key4".to_string(),
+        MetadataValue::StringArray(vec!["a".into(), "b".into()]),
+    );
 
-    let vector1: Vector = Vector::new(data1);
-    let vector2: Vector = Vector::new(data2);
-    let vector3: Vector = Vector::new(data3);
+    // Create a dummy item
+    let item = Item::new(
+        "item1".to_string(),
+        Vector::new(vec![1.0, 2.0, 3.0]),
+        Some(metadata.clone()),
+    );
 
-    let item1: Item = Item::new(String::from("abc123"), vector1, None);
+    // Call metadata method
+    let _ = item.metadata();
 
-    let item2: Item = Item::new(String::from("abc456"), vector2, None);
+    // Create a filter condition and call matches
+    let filter = FilterCondition::Contains {
+        key: "key1".to_string(),
+        value: "value".to_string(),
+    };
 
-    let item3: Item = Item::new(String::from("abc789"), vector3, None);
+    let _ = FilterCondition::Match {
+        key: "foo".to_string(),
+        value: MetadataValue::StringValue("bar".to_string()),
+    };
 
-    let mut store: VectorStore = VectorStore::new(HashMap::new());
+    // Use NotMatch variant
+    let _ = FilterCondition::NotMatch {
+        key: "foo".to_string(),
+        value: MetadataValue::StringValue("baz".to_string()),
+    };
 
-    store.upsert(item1);
+    // Use In variant
+    let _ = FilterCondition::In {
+        key: "foo".to_string(),
+        values: vec![
+            MetadataValue::StringValue("bar".to_string()),
+            MetadataValue::StringValue("baz".to_string()),
+        ],
+    };
 
-    store.upsert(item2);
+    // Use Exists variant
+    let _ = FilterCondition::Exists {
+        key: "foo".to_string(),
+        exists: true,
+    };
 
-    store.upsert(item3);
+    // Use Range variant
+    let _ = FilterCondition::Range {
+        key: "foo".to_string(),
+        gte: Some(1.0),
+        lte: Some(5.0),
+        lt: None,
+        gt: None,
+    };
 
-    let test_vector = Vector::new(vec![0.1, 0.1, 0.2]);
+    // Use Must, Should, MustNot with nested conditions
+    let nested = FilterCondition::Match {
+        key: "nested".to_string(),
+        value: MetadataValue::StringValue("value".to_string()),
+    };
 
+    let _ = FilterCondition::Must(vec![nested.clone()]);
+    let _ = FilterCondition::Should(vec![nested.clone()]);
+    let _ = FilterCondition::MustNot(vec![nested]);
+
+    let _ = filter.matches(item.metadata());
+
+    // Create a VectorStore and use filter methods
+    let mut store = VectorStore::new(HashMap::new());
+    store.upsert(item);
+    let _ = store.filter(&filter);
     let metric = Cosine;
+    let query: Vector = Vector::new(vec![1.0, 2.0, 3.0]);
+    let _ = store.search_top_k(&query, 1, &metric);
+    let _ = store.search_top_k_with_filter(&query, 1, &metric, Some(&filter));
 
-    let search_results = store.search_top_k(&test_vector, 2, &metric);
-
-    println!("{:#?}", search_results);
-
-    store.get("abc123");
-
-    store.delete("abc123");
+    let _ = store.get("item1");
+    store.delete("item1");
 }

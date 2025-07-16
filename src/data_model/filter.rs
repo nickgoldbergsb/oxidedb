@@ -39,24 +39,22 @@ pub enum FilterCondition {
 impl FilterCondition {
     pub fn matches(&self, metadata: Option<&HashMap<String, MetadataValue>>) -> bool {
         match self {
-            FilterCondition::Match { key, value } => metadata
-                .as_ref()
-                .and_then(|data| data.get(key))
-                .map_or(false, |v| v == value),
-            FilterCondition::NotMatch { key, value } => metadata
-                .as_ref()
-                .and_then(|data| data.get(key))
-                .map_or(false, |v| v != value),
+            FilterCondition::Match { key, value } => {
+                metadata.as_ref().and_then(|data| data.get(key)) == Some(value)
+            }
+            FilterCondition::NotMatch { key, value } => {
+                metadata.as_ref().and_then(|data| data.get(key)) != Some(value)
+            }
             FilterCondition::In { key, values } => metadata
                 .as_ref()
                 .and_then(|data| data.get(key))
-                .map_or(false, |v| values.contains(v)),
+                .is_some_and(|v| values.contains(v)),
             FilterCondition::Exists { key, exists } => metadata
                 .as_ref()
-                .map_or(false, |data| data.contains_key(key) == *exists),
+                .is_some_and(|data| data.contains_key(key) == *exists),
             FilterCondition::Contains { key, value } => metadata
                 .and_then(|data| data.get(key))
-                .map_or(false, |v| match v {
+                .is_some_and(|v| match v {
                     MetadataValue::StringArray(arr) => arr.contains(value),
                     _ => false,
                 }),
@@ -68,10 +66,10 @@ impl FilterCondition {
                 gt,
             } => match metadata.and_then(|data| data.get(key)) {
                 Some(MetadataValue::FloatValue(float)) => {
-                    let lte_ok = lte.map_or(true, |limit| *float <= limit);
-                    let gte_ok = gte.map_or(true, |limit| *float >= limit);
-                    let lt_ok = lt.map_or(true, |limit| *float < limit);
-                    let gt_ok = gt.map_or(true, |limit| *float > limit);
+                    let lte_ok = lte.is_none_or(|limit| *float <= limit);
+                    let gte_ok = gte.is_none_or(|limit| *float >= limit);
+                    let lt_ok = lt.is_none_or(|limit| *float < limit);
+                    let gt_ok = gt.is_none_or(|limit| *float > limit);
                     lte_ok && gte_ok && lt_ok && gt_ok
                 }
                 _ => false,
