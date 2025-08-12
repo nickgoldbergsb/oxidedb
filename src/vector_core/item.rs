@@ -1,7 +1,8 @@
 use super::vector::Vector;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Item {
     id: String,
     vector: Vector,
@@ -34,7 +35,7 @@ impl Item {
     }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum MetadataValue {
     StringValue(String),
     FloatValue(f64),

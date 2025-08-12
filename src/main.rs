@@ -1,4 +1,5 @@
 mod vector_core;
+mod vector_persist;
 
 use std::collections::HashMap;
 use vector_core::filter::FilterCondition;
