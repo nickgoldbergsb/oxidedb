@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use super::filter::FilterCondition;
 use super::item::Item;
 use super::similarity_metrics::metric::SimilarityMetric;
@@ -8,7 +10,7 @@ use std::{
     collections::{BinaryHeap, HashMap},
 };
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct VectorStore {
     items: HashMap<String, Item>,
 }
